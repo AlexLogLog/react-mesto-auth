@@ -43,26 +43,26 @@ function App() {
     const history = useHistory();
 
     useEffect(() => {
-        api
-            .getInfoAndAvatar()
-            .then((result) => {
-                setCurrentUser(result);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
-
-    useEffect(() => {
-        api
-            .getCards()
-            .then((result) => {
-                setCards(result);
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-    }, []);
+        if (loggedIn) {
+            Promise.all(
+                [
+                    newapi
+                        .getTokenEmail({
+                            token: localStorage.token
+                        }),
+                    api
+                        .getCards(),
+                    api
+                        .getInfoAndAvatar()])
+                .then(([{ data: user }, cardsList, userInfo]) => {
+                    setCurrentUser(userInfo)
+                    setCards(cardsList.reverse())
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+    }, [loggedIn]);
 
     function handleLogin({
         email,
@@ -169,6 +169,7 @@ function App() {
         checkToken();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
 
     function handleUpdateUser(newInfo) {
         api
