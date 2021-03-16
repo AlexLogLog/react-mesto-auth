@@ -46,15 +46,11 @@ function App() {
         if (loggedIn) {
             Promise.all(
                 [
-                    newapi
-                        .getTokenEmail({
-                            token: localStorage.token
-                        }),
                     api
                         .getCards(),
                     api
                         .getInfoAndAvatar()])
-                .then(([{ data: user }, cardsList, userInfo]) => {
+                .then(([ cardsList, userInfo]) => {
                     setCurrentUser(userInfo)
                     setCards(cardsList.reverse())
                 })
